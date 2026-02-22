@@ -1,0 +1,8 @@
+node_modules/
+out/
+dist/
+engine/build/
+resources/bin/*.exe
+resources/bin/timber-engine
+.DS_Store
+*.log

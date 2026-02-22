@@ -1,0 +1,44 @@
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, Environment, GizmoHelper, GizmoViewport } from '@react-three/drei'
+import { Suspense } from 'react'
+import { useStore } from '../../store'
+import { MortiseTenonScene } from './scene/MortiseTenonScene'
+
+export function Viewport3D() {
+  const editingJoint = useStore((s) => s.editingJoint)
+
+  return (
+    <div className="w-full h-full bg-slate-900">
+      <Canvas
+        camera={{ position: [400, 300, 500], fov: 45, near: 1, far: 50000 }}
+        gl={{ antialias: true }}
+        shadows
+      >
+        <Suspense fallback={null}>
+          <Environment preset="studio" />
+
+          <ambientLight intensity={0.4} />
+          <directionalLight
+            position={[500, 800, 500]}
+            intensity={1.2}
+            castShadow
+            shadow-mapSize={[2048, 2048]}
+          />
+
+          {editingJoint && (
+            <MortiseTenonScene
+              geometry={editingJoint.geometry}
+              loads={editingJoint.loads}
+            />
+          )}
+
+          <OrbitControls makeDefault />
+
+          <GizmoHelper alignment="bottom-right" margin={[60, 60]}>
+            <GizmoViewport />
+          </GizmoHelper>
+        </Suspense>
+      </Canvas>
+    </div>
+  )
+}
