@@ -16,6 +16,7 @@ export class EngineProcess extends EventEmitter {
   private pending = new Map<string, PendingRequest>()
   private buffer = ''
   private started = false
+  private healthy = false   // true only after first successful stdin write
 
   constructor(private readonly binaryPath: string) {
     super()
@@ -46,6 +47,9 @@ export class EngineProcess extends EventEmitter {
 
     this.process.on('error', (err) => {
       console.error('[Engine] Spawn error:', err)
+      this.started = false
+      this.healthy = false
+      this.process = null
       this.rejectAllPending(err)
     })
   }
@@ -59,9 +63,21 @@ export class EngineProcess extends EventEmitter {
     this.rejectAllPending(new Error('Engine stopped'))
   }
 
+  isRunning(): boolean {
+    return this.started && this.process !== null
+  }
+
   calculate(request: EngineRequest): Promise<EngineResponse> {
-    if (!this.process || !this.started) {
-      return Promise.reject(new Error('Engine is not running'))
+    if (!this.isRunning()) {
+      // Return a well-formed error response so the UI can display it gracefully
+      return Promise.resolve({
+        id: request.id,
+        type: 'error',
+        payload: {
+          code: 'ENGINE_NOT_RUNNING',
+          message: 'C++ engine is not running. Build it with: npm run setup:engine'
+        }
+      })
     }
 
     return new Promise((resolve, reject) => {
@@ -77,7 +93,12 @@ export class EngineProcess extends EventEmitter {
         if (err) {
           clearTimeout(timer)
           this.pending.delete(request.id)
-          reject(err)
+          // Resolve with structured error instead of rejecting
+          resolve({
+            id: request.id,
+            type: 'error',
+            payload: { code: 'WRITE_ERROR', message: err.message }
+          })
         }
       })
     })
