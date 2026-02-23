@@ -12,12 +12,15 @@ export type LoadDurationClass =
   | 'instantaneous'
 
 export interface MortiseTenonGeometry {
-  beam_width: number      // mm
-  beam_height: number     // mm
-  tenon_width: number     // mm
-  tenon_height: number    // mm
-  tenon_length: number    // mm
-  member_length: number   // mm
+  beam_width: number           // mm (primary member)
+  beam_height: number          // mm (primary member)
+  secondary_width: number      // mm (secondary member cross-section)
+  secondary_height: number     // mm (secondary member cross-section)
+  tenon_width: number          // mm (must be ≤ secondary_width)
+  tenon_height: number         // mm (must be ≤ secondary_height)
+  tenon_length: number         // mm (protrusion into mortise)
+  member_length: number        // mm (primary member length)
+  member_angle: number         // degrees (0-90, typically 90 for perpendicular)
 }
 
 export interface MaterialConfig {

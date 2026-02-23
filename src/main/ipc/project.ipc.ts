@@ -16,6 +16,21 @@ export function registerProjectIpc(): void {
     const filePath = filePaths[0]
     const content = await fs.readFile(filePath, 'utf-8')
     const data: ProjectFile = JSON.parse(content)
+    
+    // Migrate old projects: add secondary member dimensions if missing
+    data.joints = data.joints.map(joint => {
+      if (!joint.geometry.secondary_width) {
+        joint.geometry.secondary_width = joint.geometry.tenon_width * 2
+      }
+      if (!joint.geometry.secondary_height) {
+        joint.geometry.secondary_height = joint.geometry.tenon_height * 1.5
+      }
+      if (!joint.geometry.member_angle) {
+        joint.geometry.member_angle = 90
+      }
+      return joint
+    })
+    
     return { filePath, data }
   })
 

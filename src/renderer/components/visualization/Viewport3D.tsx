@@ -3,14 +3,17 @@ import { OrbitControls, Environment, GizmoHelper, GizmoViewport } from '@react-t
 import { Suspense } from 'react'
 import { useStore } from '../../store'
 import { MortiseTenonScene } from './scene/MortiseTenonScene'
+import { ViewModeControls } from './ViewModeControls'
 
 export function Viewport3D() {
   const editingJoint = useStore((s) => s.editingJoint)
 
   return (
-    <div className="w-full h-full bg-slate-900">
+    <div className="w-full h-full bg-slate-900 relative">
+      <ViewModeControls />
       <Canvas
-        camera={{ position: [400, 300, 500], fov: 45, near: 1, far: 50000 }}
+        camera={{ position: [400, 300, 500], zoom: 1.2, near: 1, far: 50000 }}
+        orthographic
         gl={{ antialias: true }}
         shadows
       >

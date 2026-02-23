@@ -9,10 +9,13 @@ import type {
 export const defaultGeometry = (): MortiseTenonGeometry => ({
   beam_width: 100,
   beam_height: 200,
+  secondary_width: 80,
+  secondary_height: 150,
   tenon_width: 40,
   tenon_height: 100,
   tenon_length: 80,
-  member_length: 2000
+  member_length: 2000,
+  member_angle: 90
 })
 
 export const defaultMaterial = (): MaterialConfig => ({

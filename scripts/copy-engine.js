@@ -10,7 +10,9 @@ const ROOT = path.resolve(__dirname, '..')
 const BIN_NAME = process.platform === 'win32' ? 'timber-engine.exe' : 'timber-engine'
 
 const CANDIDATES = [
+  path.join(ROOT, 'engine', 'build', 'release', 'Release', BIN_NAME),
   path.join(ROOT, 'engine', 'build', 'release', BIN_NAME),
+  path.join(ROOT, 'engine', 'build', 'debug', 'Debug', BIN_NAME),
   path.join(ROOT, 'engine', 'build', 'debug',   BIN_NAME),
 ]
 

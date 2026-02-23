@@ -1,17 +1,39 @@
 import { useRef, useState } from 'react'
 import type { Mesh } from 'three'
+import { useStore } from '../../../store'
 
 interface Props {
   position: [number, number, number]
   size: [number, number, number]
+  selected?: boolean
+  dimmed?: boolean
+  onClick?: () => void
 }
 
-const TENON_COLOR = '#A07828'
-const TENON_HIGHLIGHT = '#C89A3C'
+const TENON_COLOR = '#9B7420'
+const TENON_HIGHLIGHT = '#B08830'
+const SELECTED_COLOR = '#60A5FA' // Light blue
 
-export function Tenon({ position, size }: Props) {
+export function Tenon({ position, size, selected = false, dimmed = false, onClick }: Props) {
   const meshRef = useRef<Mesh>(null)
   const [hovered, setHovered] = useState(false)
+  const viewMode = useStore((state) => state.viewMode)
+  const transparency = useStore((state) => state.transparency)
+
+  const getColor = () => {
+    if (selected) return SELECTED_COLOR
+    if (hovered) return TENON_HIGHLIGHT
+    return TENON_COLOR
+  }
+
+  const getOpacity = () => {
+    if (viewMode === 'transparent') return transparency / 100
+    if (dimmed) return 0.3
+    return 1.0
+  }
+
+  const isWireframe = viewMode === 'wireframe'
+  const isTransparent = viewMode === 'transparent' || dimmed
 
   return (
     <mesh
@@ -21,12 +43,19 @@ export function Tenon({ position, size }: Props) {
       receiveShadow
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick?.()
+      }}
     >
       <boxGeometry args={size} />
       <meshStandardMaterial
-        color={hovered ? TENON_HIGHLIGHT : TENON_COLOR}
+        color={getColor()}
         roughness={0.6}
         metalness={0.0}
+        transparent={isTransparent}
+        opacity={getOpacity()}
+        wireframe={isWireframe}
       />
     </mesh>
   )
