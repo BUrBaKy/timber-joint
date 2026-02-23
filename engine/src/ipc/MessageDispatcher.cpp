@@ -40,25 +40,26 @@ static ec5::LoadCase parseLoads(const json& j) {
 static json serialiseResult(const ec5::MortiseTenonResult& r) {
     json checks = json::array();
     for (const auto& c : r.checks) {
-        checks.push_back({
-            {std::string(F_CHECK_ID),    c.id},
-            {std::string(F_CHECK_LABEL), c.label},
-            {std::string(F_RD),          c.Rd},
-            {std::string(F_ED),          c.Ed},
-            {std::string(F_UTILISATION), c.utilisation},
-            {std::string(F_UNIT),        c.unit},
-            {std::string(F_PASSED),      c.passed}
-        });
+        json item;
+        item[std::string(F_CHECK_ID)]    = c.id;
+        item[std::string(F_CHECK_LABEL)] = c.label;
+        item[std::string(F_RD)]          = c.Rd;
+        item[std::string(F_ED)]          = c.Ed;
+        item[std::string(F_UTILISATION)] = c.utilisation;
+        item[std::string(F_UNIT)]        = c.unit;
+        item[std::string(F_PASSED)]      = c.passed;
+        checks.push_back(item);
     }
 
-    return {
-        {std::string(F_SUMMARY), {
-            {std::string(F_PASSED),   r.summary.passed},
-            {std::string(F_MAX_UTIL), r.summary.max_utilisation},
-            {std::string(F_GOVERNING),r.summary.governing_check}
-        }},
-        {std::string(F_CHECKS), checks}
-    };
+    json summary;
+    summary[std::string(F_PASSED)]   = r.summary.passed;
+    summary[std::string(F_MAX_UTIL)] = r.summary.max_utilisation;
+    summary[std::string(F_GOVERNING)]= r.summary.governing_check;
+
+    json result;
+    result[std::string(F_SUMMARY)] = summary;
+    result[std::string(F_CHECKS)]  = checks;
+    return result;
 }
 
 // ─── Main dispatch ────────────────────────────────────────────────────────
@@ -68,14 +69,13 @@ void dispatch(const std::string& line) {
         req = json::parse(line);
     } catch (const std::exception& e) {
         // Can't reply with id — write a generic error
-        json err = {
-            {std::string(F_ID),   ""},
-            {std::string(F_TYPE), std::string(T_ERROR)},
-            {std::string(F_PAYLOAD), {
-                {std::string(F_CODE),    "PARSE_ERROR"},
-                {std::string(F_MESSAGE), e.what()}
-            }}
-        };
+        json errPayload;
+        errPayload[std::string(F_CODE)]    = "PARSE_ERROR";
+        errPayload[std::string(F_MESSAGE)] = e.what();
+        json err;
+        err[std::string(F_ID)]      = "";
+        err[std::string(F_TYPE)]    = std::string(T_ERROR);
+        err[std::string(F_PAYLOAD)] = errPayload;
         std::cout << err.dump() << "\n";
         std::cout.flush();
         return;
@@ -85,17 +85,15 @@ void dispatch(const std::string& line) {
     const std::string type = req.value(std::string(F_TYPE), "");
 
     auto writeError = [&](const std::string& code, const std::string& msg, const std::string& field = "") {
-        json payload = {
-            {std::string(F_CODE),    code},
-            {std::string(F_MESSAGE), msg}
-        };
+        json payload;
+        payload[std::string(F_CODE)]    = code;
+        payload[std::string(F_MESSAGE)] = msg;
         if (!field.empty()) payload[std::string(F_FIELD)] = field;
 
-        json resp = {
-            {std::string(F_ID),      id},
-            {std::string(F_TYPE),    std::string(T_ERROR)},
-            {std::string(F_PAYLOAD), payload}
-        };
+        json resp;
+        resp[std::string(F_ID)]      = id;
+        resp[std::string(F_TYPE)]    = std::string(T_ERROR);
+        resp[std::string(F_PAYLOAD)] = payload;
         std::cout << resp.dump() << "\n";
         std::cout.flush();
     };
@@ -119,11 +117,10 @@ void dispatch(const std::string& line) {
 
         const auto result = ec5::calculate(input);
 
-        json resp = {
-            {std::string(F_ID),      id},
-            {std::string(F_TYPE),    std::string(T_RESULT)},
-            {std::string(F_PAYLOAD), serialiseResult(result)}
-        };
+        json resp;
+        resp[std::string(F_ID)]      = id;
+        resp[std::string(F_TYPE)]    = std::string(T_RESULT);
+        resp[std::string(F_PAYLOAD)] = serialiseResult(result);
         std::cout << resp.dump() << "\n";
         std::cout.flush();
 
