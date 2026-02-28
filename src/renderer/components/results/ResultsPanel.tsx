@@ -9,8 +9,8 @@ export function ResultsPanel() {
   return (
     <div
       className={cn(
-        'border-t border-border bg-card transition-all overflow-hidden',
-        resultsPanelExpanded ? 'h-44' : 'h-8'
+        'border-t border-border bg-card overflow-hidden',
+        resultsPanelExpanded ? 'h-auto' : 'h-8'
       )}
     >
       {/* Header */}
@@ -46,7 +46,7 @@ export function ResultsPanel() {
 
       {/* Body */}
       {resultsPanelExpanded && (
-        <div className="h-36 overflow-y-auto px-3 py-2">
+        <div className="px-3 py-2">
           {calcStatus === 'idle' && (
             <p className="text-xs text-muted-foreground">
               Edit parameters to trigger a calculation.
