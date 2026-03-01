@@ -56,9 +56,21 @@ static json serialiseResult(const ec5::MortiseTenonResult& r) {
     summary[std::string(F_MAX_UTIL)] = r.summary.max_utilisation;
     summary[std::string(F_GOVERNING)]= r.summary.governing_check;
 
+    json interm;
+    interm[std::string(F_GRADE_USED)] = r.intermediates.grade_used;
+    interm[std::string(F_FV_K)]       = r.intermediates.fv_k;
+    interm[std::string(F_FC90_K)]     = r.intermediates.fc90_k;
+    interm[std::string(F_KMOD)]       = r.intermediates.kmod;
+    interm[std::string(F_GAMMA_M)]    = r.intermediates.gamma_M;
+    interm[std::string(F_FV_D)]       = r.intermediates.fv_d;
+    interm[std::string(F_FC90_D)]     = r.intermediates.fc90_d;
+    interm[std::string(F_A_SHEAR)]    = r.intermediates.A_shear;
+    interm[std::string(F_A_BEARING)]  = r.intermediates.A_bearing;
+
     json result;
-    result[std::string(F_SUMMARY)] = summary;
-    result[std::string(F_CHECKS)]  = checks;
+    result[std::string(F_SUMMARY)]       = summary;
+    result[std::string(F_CHECKS)]        = checks;
+    result[std::string(F_INTERMEDIATES)] = interm;
     return result;
 }
 

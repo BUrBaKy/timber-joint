@@ -1,5 +1,6 @@
 import { cn } from '../../lib/utils'
-import { fmt, fmtPct } from '../../lib/units'
+import { fmtPct, fromKN, fmtN } from '../../lib/units'
+import { useStore } from '../../store'
 import type { CheckResult, SummaryResult } from '../../types/engine.types'
 
 interface Props {
@@ -18,6 +19,10 @@ function UtilisationBar({ value }: { value: number }) {
 }
 
 export function CapacitySummary({ summary, checks }: Props) {
+  const { units } = useStore()
+  const fu = units.forceUnit
+  const d  = units.decimals
+
   return (
     <div className="flex flex-col gap-2 w-full">
       {/* Overall status */}
@@ -55,8 +60,8 @@ export function CapacitySummary({ summary, checks }: Props) {
             </div>
             <UtilisationBar value={check.utilisation} />
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span>Ed = {fmt(check.Ed)} {check.unit}</span>
-              <span>Rd = {fmt(check.Rd)} {check.unit}</span>
+              <span>Ed = {fmtN(fromKN(check.Ed, fu), d)} {fu}</span>
+              <span>Rd = {fmtN(fromKN(check.Rd, fu), d)} {fu}</span>
             </div>
           </div>
         ))}

@@ -136,6 +136,7 @@ MortiseTenonResult calculate(const MortiseTenonInput& inp) {
     MortiseTenonResult result;
     result.summary = summary;
     result.checks  = {shearCheck, bearingCheck};
+    result.intermediates = { m.grade, fv_k, fc90_k, km, gM, fv_d, fc90_d, A_shear, A_bearing };
     return result;
 }
 

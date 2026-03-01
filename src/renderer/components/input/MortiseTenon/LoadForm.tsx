@@ -1,4 +1,5 @@
 import { useStore } from '../../../store'
+import { fromKN, toKN } from '../../../lib/units'
 import type { MortiseTenonJoint } from '../../../types/project.types'
 
 interface Props {
@@ -25,7 +26,7 @@ function NumericField({ label, description, unit, value, onChange }: NumericFiel
           type="number"
           step={0.1}
           min={0}
-          value={value}
+          value={Number(value.toPrecision(10))}
           onChange={(e) => {
             const v = parseFloat(e.target.value)
             if (!isNaN(v) && v >= 0) onChange(v)
@@ -39,8 +40,9 @@ function NumericField({ label, description, unit, value, onChange }: NumericFiel
 }
 
 export function LoadForm({ joint }: Props) {
-  const { updateLoads } = useStore()
-  const l = joint.loads
+  const { updateLoads, units } = useStore()
+  const l  = joint.loads
+  const fu = units.forceUnit
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,17 +53,17 @@ export function LoadForm({ joint }: Props) {
       <NumericField
         label="Fv,Ed"
         description="Design shear force"
-        unit="kN"
-        value={l.Fv_Ed}
-        onChange={(v) => updateLoads({ Fv_Ed: v })}
+        unit={fu}
+        value={fromKN(l.Fv_Ed, fu)}
+        onChange={(v) => updateLoads({ Fv_Ed: toKN(v, fu) })}
       />
 
       <NumericField
         label="Ft,Ed"
         description="Design axial (tension) force"
-        unit="kN"
-        value={l.Ft_Ed}
-        onChange={(v) => updateLoads({ Ft_Ed: v })}
+        unit={fu}
+        value={fromKN(l.Ft_Ed, fu)}
+        onChange={(v) => updateLoads({ Ft_Ed: toKN(v, fu) })}
       />
     </div>
   )

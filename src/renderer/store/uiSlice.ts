@@ -3,6 +3,7 @@ import type { StateCreator } from 'zustand'
 export type InputTab = 'geometry' | 'material' | 'loads'
 export type SelectedMember = 'primary' | 'secondary' | 'tenon' | 'mortise' | null
 export type ViewMode = 'rendered' | 'transparent' | 'wireframe'
+export type MainView = '3d' | 'report'
 
 export interface UISlice {
   activeTab: InputTab
@@ -11,6 +12,7 @@ export interface UISlice {
   selectedMember: SelectedMember
   viewMode: ViewMode
   transparency: number  // 0-100, where 100 is fully opaque
+  mainView: MainView
 
   setActiveTab: (tab: InputTab) => void
   setResultsPanelExpanded: (expanded: boolean) => void
@@ -18,6 +20,7 @@ export interface UISlice {
   setSelectedMember: (member: SelectedMember) => void
   setViewMode: (mode: ViewMode) => void
   setTransparency: (value: number) => void
+  setMainView: (view: MainView) => void
 }
 
 export const createUISlice: StateCreator<UISlice, [['zustand/immer', never]]> = (set) => ({
@@ -27,6 +30,7 @@ export const createUISlice: StateCreator<UISlice, [['zustand/immer', never]]> = 
   selectedMember: null,
   viewMode: 'rendered',
   transparency: 50,  // Default 50% opacity in transparent mode
+  mainView: '3d',
 
   setActiveTab: (tab) =>
     set((state) => {
@@ -56,5 +60,10 @@ export const createUISlice: StateCreator<UISlice, [['zustand/immer', never]]> = 
   setTransparency: (value) =>
     set((state) => {
       state.transparency = Math.max(0, Math.min(100, value))
-    })
+    }),
+
+  setMainView: (view) =>
+    set((state) => {
+      state.mainView = view
+    }),
 })

@@ -59,4 +59,16 @@ constexpr std::string_view F_CODE             = "code";
 constexpr std::string_view F_MESSAGE          = "message";
 constexpr std::string_view F_FIELD            = "field";
 
+// Intermediate calculation values
+constexpr std::string_view F_INTERMEDIATES    = "intermediates";
+constexpr std::string_view F_GRADE_USED       = "grade_used";
+constexpr std::string_view F_FV_K             = "fv_k";
+constexpr std::string_view F_FC90_K           = "fc90_k";
+constexpr std::string_view F_KMOD             = "kmod";
+constexpr std::string_view F_GAMMA_M          = "gamma_M";
+constexpr std::string_view F_FV_D             = "fv_d";
+constexpr std::string_view F_FC90_D           = "fc90_d";
+constexpr std::string_view F_A_SHEAR          = "A_shear";
+constexpr std::string_view F_A_BEARING        = "A_bearing";
+
 } // namespace ipc

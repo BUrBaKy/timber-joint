@@ -46,9 +46,22 @@ struct SummaryResult {
     std::string governing_check;
 };
 
+struct CalculationIntermediates {
+    std::string grade_used;
+    double fv_k    = 0.0;  // MPa — characteristic shear strength
+    double fc90_k  = 0.0;  // MPa — characteristic compression perp.
+    double kmod    = 0.0;  // modification factor
+    double gamma_M = 0.0;  // partial material factor
+    double fv_d    = 0.0;  // MPa — design shear strength
+    double fc90_d  = 0.0;  // MPa — design compression perp.
+    double A_shear   = 0.0; // mm²
+    double A_bearing = 0.0; // mm²
+};
+
 struct MortiseTenonResult {
     SummaryResult             summary;
     std::vector<CheckResult>  checks;
+    CalculationIntermediates  intermediates;
 };
 
 /**

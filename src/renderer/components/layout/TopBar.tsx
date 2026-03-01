@@ -1,12 +1,23 @@
+import { useState } from 'react'
 import { useStore } from '../../store'
 import { project as projectAPI } from '../../api/bridge'
 import { defaultProject } from '../../store/projectSlice'
 import { defaultGeometry, defaultMaterial, defaultLoads } from '../../store/jointSlice'
 import { v4 as uuidv4 } from 'uuid'
+import { UnitsDialog } from '../settings/UnitsDialog'
+
+function cn(...classes: (string | false | undefined)[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
 export function TopBar() {
-  const { project, filePath, isDirty, setProject, setFilePath, addJoint, setEditingJoint, selectJoint } =
-    useStore()
+  const [unitsOpen, setUnitsOpen] = useState(false)
+
+  const {
+    project, filePath, isDirty,
+    setProject, setFilePath, addJoint, setEditingJoint, selectJoint,
+    mainView, setMainView,
+  } = useStore()
 
   const handleOpen = async () => {
     const result = await projectAPI.openFile()
@@ -66,7 +77,46 @@ export function TopBar() {
         >
           Save
         </button>
+
+        <span className="text-border text-xs">|</span>
+
+        {/* View toggle — 3D / Report */}
+        <div className="flex border border-border rounded overflow-hidden">
+          <button
+            onClick={() => setMainView('3d')}
+            className={cn(
+              'px-3 py-1 text-xs font-medium transition-colors',
+              mainView === '3d'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
+            )}
+          >
+            3D
+          </button>
+          <button
+            onClick={() => setMainView('report')}
+            className={cn(
+              'px-3 py-1 text-xs font-medium transition-colors border-l border-border',
+              mainView === 'report'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-muted-foreground hover:text-foreground'
+            )}
+          >
+            Report
+          </button>
+        </div>
+
+        {/* Units settings */}
+        <button
+          onClick={() => setUnitsOpen(true)}
+          title="Display Units"
+          className="px-3 py-1 text-xs rounded bg-secondary hover:bg-accent text-foreground transition-colors"
+        >
+          Units
+        </button>
       </div>
+
+      <UnitsDialog open={unitsOpen} onClose={() => setUnitsOpen(false)} />
     </div>
   )
 }

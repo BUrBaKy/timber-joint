@@ -65,9 +65,22 @@ export interface SummaryResult {
   governing_check: string
 }
 
+export interface CalculationIntermediates {
+  grade_used: string
+  fv_k:    number  // MPa — characteristic shear strength
+  fc90_k:  number  // MPa — characteristic compression perp.
+  kmod:    number  // modification factor
+  gamma_M: number  // partial material factor
+  fv_d:    number  // MPa — design shear strength
+  fc90_d:  number  // MPa — design compression perp.
+  A_shear:   number  // mm²
+  A_bearing: number  // mm²
+}
+
 export interface EngineResultPayload {
-  summary: SummaryResult
-  checks: CheckResult[]
+  summary:       SummaryResult
+  checks:        CheckResult[]
+  intermediates: CalculationIntermediates
 }
 
 export interface EngineErrorPayload {

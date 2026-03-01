@@ -1,4 +1,5 @@
 import { useStore } from '../../../store'
+import { fromMm, toMm } from '../../../lib/units'
 import type { MortiseTenonJoint } from '../../../types/project.types'
 
 interface Props {
@@ -13,7 +14,7 @@ interface NumericFieldProps {
   onChange: (value: number) => void
 }
 
-function NumericField({ label, unit, value, min = 1, onChange }: NumericFieldProps) {
+function NumericField({ label, unit, value, min = 0, onChange }: NumericFieldProps) {
   return (
     <div className="flex flex-col gap-1">
       <label className="text-xs text-muted-foreground">{label}</label>
@@ -21,7 +22,7 @@ function NumericField({ label, unit, value, min = 1, onChange }: NumericFieldPro
         <input
           type="number"
           min={min}
-          value={value}
+          value={Number(value.toPrecision(10))}
           onChange={(e) => {
             const v = parseFloat(e.target.value)
             if (!isNaN(v) && v >= min) onChange(v)
@@ -35,18 +36,24 @@ function NumericField({ label, unit, value, min = 1, onChange }: NumericFieldPro
 }
 
 export function GeometryForm({ joint }: Props) {
-  const { updateGeometry } = useStore()
-  const g = joint.geometry
+  const { updateGeometry, units } = useStore()
+  const g  = joint.geometry
+  const du = units.distanceUnit
 
-  // Helper to enforce tenon size limits
+  // Display: mm → display unit. Write: display unit → mm
+  const disp  = (mm: number)  => fromMm(mm, du)
+  const write = (v: number)   => toMm(v, du)
+
   const updateTenonWidth = (value: number) => {
-    const maxWidth = g.secondary_width ?? value
-    updateGeometry({ tenon_width: Math.min(value, maxWidth) })
+    const tenonMm = write(value)
+    const maxMm   = g.secondary_width ?? tenonMm
+    updateGeometry({ tenon_width: Math.min(tenonMm, maxMm) })
   }
 
   const updateTenonHeight = (value: number) => {
-    const maxHeight = g.secondary_height ?? value
-    updateGeometry({ tenon_height: Math.min(value, maxHeight) })
+    const tenonMm = write(value)
+    const maxMm   = g.secondary_height ?? tenonMm
+    updateGeometry({ tenon_height: Math.min(tenonMm, maxMm) })
   }
 
   return (
@@ -54,41 +61,41 @@ export function GeometryForm({ joint }: Props) {
       <section>
         <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Primary Beam</div>
         <div className="flex flex-col gap-2">
-          <NumericField label="Beam Width" unit="mm" value={g.beam_width} onChange={(v) => updateGeometry({ beam_width: v })} />
-          <NumericField label="Beam Height" unit="mm" value={g.beam_height} onChange={(v) => updateGeometry({ beam_height: v })} />
-          <NumericField label="Member Length" unit="mm" value={g.member_length} onChange={(v) => updateGeometry({ member_length: v })} />
+          <NumericField label="Beam Width"    unit={du} value={disp(g.beam_width)}    onChange={(v) => updateGeometry({ beam_width:    write(v) })} />
+          <NumericField label="Beam Height"   unit={du} value={disp(g.beam_height)}   onChange={(v) => updateGeometry({ beam_height:   write(v) })} />
+          <NumericField label="Member Length" unit={du} value={disp(g.member_length)} onChange={(v) => updateGeometry({ member_length: write(v) })} />
         </div>
       </section>
 
       <section>
         <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Secondary Member</div>
         <div className="flex flex-col gap-2">
-          <NumericField 
-            label="Width" 
-            unit="mm" 
-            value={g.secondary_width ?? 80} 
+          <NumericField
+            label="Width"
+            unit={du}
+            value={disp(g.secondary_width ?? 80)}
             onChange={(v) => {
-              updateGeometry({ secondary_width: v })
-              // Re-validate tenon dimensions
-              if (g.tenon_width > v) updateGeometry({ tenon_width: v })
-            }} 
+              const mm = write(v)
+              updateGeometry({ secondary_width: mm })
+              if (g.tenon_width > mm) updateGeometry({ tenon_width: mm })
+            }}
           />
-          <NumericField 
-            label="Height" 
-            unit="mm" 
-            value={g.secondary_height ?? 150} 
+          <NumericField
+            label="Height"
+            unit={du}
+            value={disp(g.secondary_height ?? 150)}
             onChange={(v) => {
-              updateGeometry({ secondary_height: v })
-              // Re-validate tenon dimensions
-              if (g.tenon_height > v) updateGeometry({ tenon_height: v })
-            }} 
+              const mm = write(v)
+              updateGeometry({ secondary_height: mm })
+              if (g.tenon_height > mm) updateGeometry({ tenon_height: mm })
+            }}
           />
-          <NumericField 
-            label="Angle" 
-            unit="°" 
-            value={g.member_angle ?? 90} 
+          <NumericField
+            label="Angle"
+            unit="°"
+            value={g.member_angle ?? 90}
             min={0}
-            onChange={(v) => updateGeometry({ member_angle: Math.max(0, Math.min(90, v)) })} 
+            onChange={(v) => updateGeometry({ member_angle: Math.max(0, Math.min(90, v)) })}
           />
         </div>
       </section>
@@ -96,25 +103,30 @@ export function GeometryForm({ joint }: Props) {
       <section>
         <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Tenon</div>
         <div className="flex flex-col gap-2">
-          <NumericField 
-            label="Tenon Width" 
-            unit="mm" 
-            value={g.tenon_width} 
+          <NumericField
+            label="Tenon Width"
+            unit={du}
+            value={disp(g.tenon_width)}
             onChange={updateTenonWidth}
           />
           <div className="text-xs text-muted-foreground -mt-1 ml-1">
-            Max: {g.secondary_width ?? 80} mm
+            Max: {disp(g.secondary_width ?? 80).toPrecision(4)} {du}
           </div>
-          <NumericField 
-            label="Tenon Height" 
-            unit="mm" 
-            value={g.tenon_height} 
+          <NumericField
+            label="Tenon Height"
+            unit={du}
+            value={disp(g.tenon_height)}
             onChange={updateTenonHeight}
           />
           <div className="text-xs text-muted-foreground -mt-1 ml-1">
-            Max: {g.secondary_height ?? 150} mm
+            Max: {disp(g.secondary_height ?? 150).toPrecision(4)} {du}
           </div>
-          <NumericField label="Tenon Length" unit="mm" value={g.tenon_length} onChange={(v) => updateGeometry({ tenon_length: v })} />
+          <NumericField
+            label="Tenon Length"
+            unit={du}
+            value={disp(g.tenon_length)}
+            onChange={(v) => updateGeometry({ tenon_length: write(v) })}
+          />
         </div>
       </section>
     </div>
