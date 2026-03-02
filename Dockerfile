@@ -19,15 +19,23 @@ RUN npm ci
 # Copy full source before cmake — CMake validates source file paths at configure time
 COPY . .
 
-# Ensure resources/icon.png exists (electron-builder requires it for AppImage).
-RUN mkdir -p resources && node -e "\
-  const fs = require('fs'); \
-  if (!fs.existsSync('resources/icon.png')) { \
-    const b = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQ' + \
-      'AABjkB6QAAAABJRU5ErkJggg==', 'base64'); \
-    fs.writeFileSync('resources/icon.png', b); \
-    console.log('Created placeholder resources/icon.png'); \
-  } \
+# Ensure resources/icon.png exists at 256×256 (electron-builder minimum for AppImage).
+# Generates a solid blue placeholder if the file was not committed to the repo.
+RUN mkdir -p resources && python3 -c "
+import struct, zlib, os
+if os.path.exists('resources/icon.png'):
+    exit()
+def chunk(t, d):
+    c = t + d
+    return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
+w = h = 256
+raw = b''.join(b'\x00' + bytes([37, 99, 235]) * w for _ in range(h))
+png = (b'\x89PNG\r\n\x1a\n'
+    + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0))
+    + chunk(b'IDAT', zlib.compress(raw, 9))
+    + chunk(b'IEND', b''))
+open('resources/icon.png', 'wb').write(png)
+print('Created 256x256 placeholder resources/icon.png')
 "
 
 # Configure and build C++ engine (Linux Release)
