@@ -1,0 +1,40 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # allow manual runs from the GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # Configure the CMake release preset (Visual Studio 17 2022 — available on windows-latest).
+      # Must run before package:win, which calls cmake --build but not cmake configure.
+      - name: Configure CMake (Release)
+        run: cmake --preset release -S engine
+
+      # Runs: electron-vite build → cmake --build release → copy engine → electron-builder --win
+      - name: Build and package
+        run: npm run package:win
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: timber-joint-windows-installer
+          path: dist/*.exe
+          if-no-files-found: error
