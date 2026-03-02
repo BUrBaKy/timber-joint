@@ -21,22 +21,7 @@ COPY . .
 
 # Ensure resources/icon.png exists at 256×256 (electron-builder minimum for AppImage).
 # Generates a solid blue placeholder if the file was not committed to the repo.
-RUN mkdir -p resources && python3 -c "
-import struct, zlib, os
-if os.path.exists('resources/icon.png'):
-    exit()
-def chunk(t, d):
-    c = t + d
-    return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
-w = h = 256
-raw = b''.join(b'\x00' + bytes([37, 99, 235]) * w for _ in range(h))
-png = (b'\x89PNG\r\n\x1a\n'
-    + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0))
-    + chunk(b'IDAT', zlib.compress(raw, 9))
-    + chunk(b'IEND', b''))
-open('resources/icon.png', 'wb').write(png)
-print('Created 256x256 placeholder resources/icon.png')
-"
+RUN mkdir -p resources && python3 -c "import struct,zlib,os;os.path.exists('resources/icon.png')and exit();chunk=lambda t,d:struct.pack('>I',len(d))+t+d+struct.pack('>I',zlib.crc32(t+d)&0xffffffff);w=256;raw=b''.join(b'\x00'+bytes([37,99,235])*w for _ in range(w));open('resources/icon.png','wb').write(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',w,w,8,2,0,0,0))+chunk(b'IDAT',zlib.compress(raw,9))+chunk(b'IEND',b''))"
 
 # Configure and build C++ engine (Linux Release)
 RUN cmake --preset linux-release -S engine \
