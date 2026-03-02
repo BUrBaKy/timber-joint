@@ -134,12 +134,41 @@ export const useStore = create<AppStore>()(
 
 Slices return setters that mutate draft state directly (Immer handles immutability).
 
+Each slice uses this type signature:
+```typescript
+export const createMySlice: StateCreator<MySlice, [['zustand/immer', never]]> = (set) => ({ ... })
+```
+
+**Critical selector pattern** — always use selector functions, never destructure the store:
+```typescript
+// ✅ CORRECT
+const viewMode = useStore(state => state.viewMode)
+
+// ❌ WRONG — causes black screen / rendering issues
+const { viewMode } = useStore()
+```
+
 ### C++ Engine Protocol
 
 - **Request format**: JSON with `{ id, type, payload }`
 - **Response format**: JSON with `{ id, type: 'result' | 'error', payload }`
 - Engine runs in unbuffered mode for immediate responses
 - 10-second timeout per request (configurable in `EngineProcess.ts`)
+
+### Calling the Engine from the Renderer
+
+Always go through `src/renderer/api/bridge.ts` — never call `window.electronAPI` directly from components or store slices:
+```typescript
+import * as bridge from '../api/bridge'
+const response = await bridge.engine.calculate(request)
+```
+
+Use the type guards from `engine.types.ts` to discriminate responses:
+```typescript
+import { isEngineResult, isEngineError } from '../types/engine.types'
+if (isEngineResult(response)) { /* use response.payload.checks */ }
+if (isEngineError(response))  { /* use response.payload.message */ }
+```
 
 ### Error Handling
 
@@ -175,6 +204,12 @@ When changing joint parameters, update in **three places**:
 1. TypeScript interfaces (`engine.types.ts`)
 2. C++ protocol constants (`Protocol.h`)
 3. Calculation implementation (`engine/src/ec5/`)
+
+When adding new fields that old project files won't have, add migration defaults in `src/main/ipc/project.ipc.ts` (see existing `secondary_width`, `secondary_height`, `member_angle` migration as an example).
+
+### Project Files
+
+Projects are saved as `.tjd` files (JSON format). The `ProjectFile` type is defined in `src/renderer/types/project.types.ts`.
 
 ### C++ Dependencies
 

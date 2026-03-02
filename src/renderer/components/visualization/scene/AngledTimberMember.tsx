@@ -33,6 +33,8 @@ export function AngledTimberMember({
   dimmed = false,
   onClick
 }: Props) {
+  console.log('🟢 AngledTimberMember rendering', { size, cutAngle, cutAngleDeg: (cutAngle * 180 / Math.PI).toFixed(1) })
+  
   const meshRef = useRef<Mesh>(null)
   const [hovered, setHovered] = useState(false)
   const viewMode = useStore((state) => state.viewMode)
@@ -42,6 +44,14 @@ export function AngledTimberMember({
 
   // Create CSG geometry with angled bottom cut
   const geometry = useMemo(() => {
+    console.log('🔨 CSG: Creating angled cut', { 
+      width, 
+      height, 
+      depth, 
+      cutAngle, 
+      cutAngleDeg: (cutAngle * 180 / Math.PI).toFixed(1) 
+    })
+
     const evaluator = new Evaluator()
 
     // Create the main box
@@ -65,8 +75,15 @@ export function AngledTimberMember({
     cutterBrush.position.y = -height / 2 - cutterHeight / 2 + (width / 2) * Math.tan(cutAngle)
     cutterBrush.updateMatrixWorld()
 
+    console.log('🔨 CSG: Cutter config', {
+      rotation: cutterBrush.rotation.x,
+      posY: cutterBrush.position.y
+    })
+
     // Perform CSG subtraction
     const result = evaluator.evaluate(boxBrush, cutterBrush, SUBTRACTION)
+
+    console.log('🔨 CSG: Result vertices', result.geometry.attributes.position.count)
 
     return result.geometry as BufferGeometry
   }, [width, height, depth, cutAngle])

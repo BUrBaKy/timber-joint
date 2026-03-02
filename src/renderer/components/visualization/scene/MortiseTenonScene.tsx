@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { ArrowHelper, Vector3 } from 'three'
 import { TimberMember } from './TimberMember'
-// import { AngledTimberMember } from './AngledTimberMember' // Enable after npm install
+import { AngledTimberMember } from './AngledTimberMember'
 import { Tenon } from './Tenon'
 import { Mortise } from './Mortise'
 import { AxisLabel } from './AxisLabel'
@@ -195,16 +195,34 @@ export function MortiseTenonScene({ geometry, loads }: Props) {
 
       {/* Secondary member (post) - rotated by member_angle */}
       <group position={[postOffsetX, postCY, 0]} rotation={[0, 0, -(Math.PI / 2 - angleRad)]}>
-        {/* Use regular TimberMember for now - CSG requires npm install first */}
-        <TimberMember
-          position={[0, 0, 0]}
-          size={[sw, postHeight, sh]}
-          color={COLORS.secondaryMember.base}
-          highlightColor={COLORS.secondaryMember.highlight}
-          selected={selectedMember === 'secondary'}
-          dimmed={selectedMember !== null && selectedMember !== 'secondary'}
-          onClick={() => setSelectedMember('secondary')}
-        />
+        {/* Use CSG for angled cuts, regular box at 90° */}
+        {(() => {
+          const useCSG = Math.abs(angle - 90) >= 0.1
+          console.log('🔧 Secondary member rendering:', { angle, useCSG, cutAngle: Math.PI / 2 - angleRad, cutAngleDeg: ((Math.PI / 2 - angleRad) * 180 / Math.PI).toFixed(1) })
+          
+          return useCSG ? (
+            <AngledTimberMember
+              position={[0, 0, 0]}
+              size={[sw, postHeight, sh]}
+              cutAngle={Math.PI / 2 - angleRad}
+              color={COLORS.secondaryMember.base}
+              highlightColor={COLORS.secondaryMember.highlight}
+              selected={selectedMember === 'secondary'}
+              dimmed={selectedMember !== null && selectedMember !== 'secondary'}
+              onClick={() => setSelectedMember('secondary')}
+            />
+          ) : (
+            <TimberMember
+              position={[0, 0, 0]}
+              size={[sw, postHeight, sh]}
+              color={COLORS.secondaryMember.base}
+              highlightColor={COLORS.secondaryMember.highlight}
+              selected={selectedMember === 'secondary'}
+              dimmed={selectedMember !== null && selectedMember !== 'secondary'}
+              onClick={() => setSelectedMember('secondary')}
+            />
+          )
+        })()}
         
         {/* Secondary member axis - connects to primary axis */}
         <line>
