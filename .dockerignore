@@ -19,3 +19,6 @@ resources/bin/
 .DS_Store
 *.log
 npm audit.txt
+
+# Local config files
+vite.web.config.ts.timestamp-*

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../../store'
-import { project as projectAPI } from '../../api/bridge'
+import { project as projectAPI } from '@renderer/api/bridge'
 import { defaultProject } from '../../store/projectSlice'
 import { defaultGeometry, defaultMaterial, defaultLoads } from '../../store/jointSlice'
 import { v4 as uuidv4 } from 'uuid'

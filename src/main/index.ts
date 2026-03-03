@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron'
 import path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { EngineProcess } from './engine/EngineProcess'
+import { EngineProcess } from '../shared/engine/EngineProcess'
 import { resolveEnginePath } from './engine/enginePath'
 import { registerAllIpc } from './ipc'
 

@@ -2,8 +2,11 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "include": [
     "electron.vite.config.*",
+    "vite.web.config.*",
     "src/main/**/*",
     "src/preload/**/*",
+    "src/shared/**/*",
+    "src/server/**/*",
     "scripts/**/*"
   ],
   "compilerOptions": {

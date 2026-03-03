@@ -17,10 +17,12 @@ export default defineConfig({
   },
   renderer: {
     resolve: {
-      alias: {
-        '@renderer': resolve('src/renderer'),
-        '@shared': resolve('src/shared')
-      }
+      alias: [
+        // More specific alias first — Electron build uses the Electron bridge
+        { find: '@renderer/api/bridge', replacement: resolve('src/renderer/api/bridge.electron.ts') },
+        { find: '@renderer', replacement: resolve('src/renderer') },
+        { find: '@shared', replacement: resolve('src/shared') }
+      ]
     },
     plugins: [react()]
   }

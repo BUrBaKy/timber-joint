@@ -1,0 +1,14 @@
+services:
+  app:
+    image: burbaky/timber-joint:latest
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      # Override the engine binary path if needed:
+      # ENGINE_PATH=/app/resources/bin/timber-engine
+    volumes:
+      # Optional: mount a folder to persist .tjd project files saved via the server
+      # - ./projects:/app/projects
+      []

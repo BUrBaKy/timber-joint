@@ -1,6 +1,5 @@
 import { ipcMain, dialog } from 'electron'
-import fs from 'fs/promises'
-import path from 'path'
+import { readProjectFile, writeProjectFile } from '../../shared/handlers/project.handler'
 import type { ProjectFile } from '../../renderer/types/project.types'
 
 export function registerProjectIpc(): void {
@@ -12,26 +11,7 @@ export function registerProjectIpc(): void {
     })
 
     if (canceled || filePaths.length === 0) return null
-
-    const filePath = filePaths[0]
-    const content = await fs.readFile(filePath, 'utf-8')
-    const data: ProjectFile = JSON.parse(content)
-    
-    // Migrate old projects: add secondary member dimensions if missing
-    data.joints = data.joints.map(joint => {
-      if (!joint.geometry.secondary_width) {
-        joint.geometry.secondary_width = joint.geometry.tenon_width * 2
-      }
-      if (!joint.geometry.secondary_height) {
-        joint.geometry.secondary_height = joint.geometry.tenon_height * 1.5
-      }
-      if (!joint.geometry.member_angle) {
-        joint.geometry.member_angle = 90
-      }
-      return joint
-    })
-    
-    return { filePath, data }
+    return readProjectFile(filePaths[0])
   })
 
   ipcMain.handle('project:save', async (_event, filePath: string | null, data: ProjectFile) => {
@@ -47,9 +27,6 @@ export function registerProjectIpc(): void {
       targetPath = chosen
     }
 
-    // Update modifiedAt before saving
-    data.metadata.modifiedAt = new Date().toISOString()
-    await fs.writeFile(targetPath, JSON.stringify(data, null, 2), 'utf-8')
-    return targetPath
+    return writeProjectFile(targetPath, data)
   })
 }

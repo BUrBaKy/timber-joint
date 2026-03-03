@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../store'
-import { engine } from '../api/bridge'
+import { engine } from '@renderer/api/bridge'
 import { isEngineResult, isEngineError } from '../types/engine.types'
 import type { MortiseTenonJoint } from '../types/project.types'
 
