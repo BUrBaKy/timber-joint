@@ -36,7 +36,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
   }
 
   const getOpacity = () => {
-    if (viewMode === 'transparent') return transparency / 100
+    if (viewMode === 'transparent') return selected ? 1.0 : transparency / 100
     if (dimmed) return 0.3
     return 1.0
   }
@@ -70,7 +70,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
         onClick={handleClick}
       >
         <boxGeometry args={[width, wallThickness, height]} />
-        <meshStandardMaterial {...materialProps} />
+        <meshStandardMaterial key={`${isTransparent}-${isWireframe}`} {...materialProps} />
       </mesh>
 
       {/* Left wall */}
@@ -83,7 +83,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
         onClick={handleClick}
       >
         <boxGeometry args={[wallThickness, depth, height]} />
-        <meshStandardMaterial {...materialProps} />
+        <meshStandardMaterial key={`${isTransparent}-${isWireframe}`} {...materialProps} />
       </mesh>
 
       {/* Right wall */}
@@ -96,7 +96,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
         onClick={handleClick}
       >
         <boxGeometry args={[wallThickness, depth, height]} />
-        <meshStandardMaterial {...materialProps} />
+        <meshStandardMaterial key={`${isTransparent}-${isWireframe}`} {...materialProps} />
       </mesh>
 
       {/* Front wall */}
@@ -109,7 +109,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
         onClick={handleClick}
       >
         <boxGeometry args={[width, depth, wallThickness]} />
-        <meshStandardMaterial {...materialProps} />
+        <meshStandardMaterial key={`${isTransparent}-${isWireframe}`} {...materialProps} />
       </mesh>
 
       {/* Back wall */}
@@ -122,7 +122,7 @@ export function Mortise({ position, mortiseSize, beamHeight, selected = false, d
         onClick={handleClick}
       >
         <boxGeometry args={[width, depth, wallThickness]} />
-        <meshStandardMaterial {...materialProps} />
+        <meshStandardMaterial key={`${isTransparent}-${isWireframe}`} {...materialProps} />
       </mesh>
     </group>
   )
