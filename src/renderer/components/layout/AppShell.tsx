@@ -25,7 +25,7 @@ export function AppShell() {
         <div className="flex flex-col flex-1 overflow-hidden">
           {mainView === '3d' ? (
             <>
-              <div className="flex-1 relative">
+              <div className="flex-1 min-h-0 relative">
                 <Viewport3D />
               </div>
               <ResultsPanel />
