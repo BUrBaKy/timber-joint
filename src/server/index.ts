@@ -23,7 +23,7 @@ if (!IS_DEV) {
   // When bundled with esbuild, __dirname is the directory of out/server.js → out/
   const RENDERER_DIR = process.env.RENDERER_DIR ?? path.join(__dirname, 'web-renderer')
   app.use(express.static(RENDERER_DIR))
-  app.get('*', (_req, res) => {
+  app.get('/{*splat}', (_req, res) => {
     res.sendFile(path.join(RENDERER_DIR, 'index.html'))
   })
 }
