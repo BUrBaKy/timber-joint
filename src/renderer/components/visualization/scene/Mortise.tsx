@@ -12,9 +12,9 @@ interface Props {
   onClick?: () => void
 }
 
-const MORTISE_COLOR = '#6B5110'
-const MORTISE_HIGHLIGHT = '#8B6914'
-const SELECTED_COLOR = '#60A5FA' // Light blue
+const MORTISE_COLOR = '#7A5530'
+const MORTISE_HIGHLIGHT = '#966740'
+const SELECTED_COLOR = '#E67E22' // Brand accent orange
 
 /**
  * Mortise - a closed pocket in the beam that receives the tenon.

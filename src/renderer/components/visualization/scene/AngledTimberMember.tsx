@@ -15,9 +15,9 @@ interface Props {
   onClick?: () => void
 }
 
-const WOOD_COLOR = '#8B6914'
-const WOOD_HIGHLIGHT = '#B8892A'
-const SELECTED_COLOR = '#60A5FA'
+const WOOD_COLOR = '#966740'
+const WOOD_HIGHLIGHT = '#AC7A50'
+const SELECTED_COLOR = '#E67E22'
 
 /**
  * Angled Timber Member - uses CSG to cut the bottom at an angle

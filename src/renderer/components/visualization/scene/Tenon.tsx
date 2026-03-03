@@ -10,9 +10,9 @@ interface Props {
   onClick?: () => void
 }
 
-const TENON_COLOR = '#9B7420'
-const TENON_HIGHLIGHT = '#B08830'
-const SELECTED_COLOR = '#60A5FA' // Light blue
+const TENON_COLOR = '#966740'
+const TENON_HIGHLIGHT = '#AC7A50'
+const SELECTED_COLOR = '#E67E22' // Brand accent orange
 
 export function Tenon({ position, size, selected = false, dimmed = false, onClick }: Props) {
   const meshRef = useRef<Mesh>(null)

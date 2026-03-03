@@ -9,7 +9,7 @@ export function Viewport3D() {
   const editingJoint = useStore((s) => s.editingJoint)
 
   return (
-    <div className="w-full h-full bg-slate-900 relative">
+    <div className="w-full h-full relative" style={{ background: '#F5F5F2' }}>
       <ViewModeControls />
       <Canvas
         camera={{ position: [400, 300, 500], zoom: 1.2, near: 1, far: 50000 }}

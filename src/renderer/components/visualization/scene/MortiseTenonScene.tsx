@@ -14,12 +14,12 @@ interface Props {
   loads: LoadCase
 }
 
-// Color palette - different yellow/brown shades for each element
+// Color palette aligned with brand scheme
 const COLORS = {
-  primaryMember: { base: '#D4A843', highlight: '#E5BE5A' },     // Golden yellow (horizontal beam)
-  secondaryMember: { base: '#B8892A', highlight: '#CFA03D' },   // Darker yellow (vertical post)
-  tenon: { base: '#9B7420', highlight: '#B08830' },              // Medium brown-yellow
-  mortise: { base: '#6B5110', highlight: '#8B6914' }             // Dark brown
+  primaryMember: { base: '#C48A4E', highlight: '#D9A060' },     // Wood Piece 1 (horizontal beam)
+  secondaryMember: { base: '#966740', highlight: '#AC7A50' },   // Wood Piece 2 (vertical post)
+  tenon: { base: '#966740', highlight: '#AC7A50' },              // Part of secondary member
+  mortise: { base: '#7A5530', highlight: '#966740' }             // Darker cavity within primary
 }
 
 /**
@@ -269,7 +269,7 @@ export function MortiseTenonScene({ geometry, loads }: Props) {
 
       {/* Grid helper */}
       <gridHelper
-        args={[ml * 1.5, 10, '#334155', '#1e293b']}
+        args={[ml * 1.5, 10, '#C0B4A0', '#D4C8B8']}
         position={[0, -bh / 2, 0]}
       />
     </group>
