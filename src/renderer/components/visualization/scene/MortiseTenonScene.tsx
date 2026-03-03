@@ -3,8 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import { ArrowHelper, Vector3 } from 'three'
 import { TimberMember } from './TimberMember'
 import { AngledTimberMember } from './AngledTimberMember'
+import { BeamWithMortise } from './BeamWithMortise'
 import { Tenon } from './Tenon'
-import { Mortise } from './Mortise'
 import { AxisLabel } from './AxisLabel'
 import { useStore } from '../../../store'
 import type { MortiseTenonGeometry, LoadCase } from '../../../types/engine.types'
@@ -159,26 +159,27 @@ export function MortiseTenonScene({ geometry, loads }: Props) {
   return (
     <>
       <group onClick={() => setSelectedMember(null)}>
-        {/* Primary horizontal beam - solid, no split */}
-        <TimberMember
+        {/* Primary horizontal beam with CSG mortise pocket */}
+        <BeamWithMortise
           position={[0, 0, 0]}
-          size={[ml, bh, bw]}
+          beamSize={[ml, bh, bw]}
+          mortiseSize={mortiseSize}
+          mortiseOffset={[0, mortiseY, 0]}
           color={COLORS.primaryMember.base}
           highlightColor={COLORS.primaryMember.highlight}
           selected={selectedMember === 'primary'}
-          dimmed={selectedMember !== null && selectedMember !== 'primary'}
+          dimmed={selectedMember !== null && selectedMember !== 'primary' && selectedMember !== 'mortise'}
           onClick={() => setSelectedMember('primary')}
         />
 
-      {/* Mortise pocket - rectangular cavity on top face */}
-      <Mortise
+      {/* Mortise click target — invisible mesh inside the CSG pocket */}
+      <mesh
         position={[0, mortiseY, 0]}
-        mortiseSize={mortiseSize}
-        beamHeight={bh}
-        selected={selectedMember === 'mortise'}
-        dimmed={selectedMember !== null && selectedMember !== 'mortise'}
-        onClick={() => setSelectedMember('mortise')}
-      />
+        onClick={(e) => { e.stopPropagation(); setSelectedMember('mortise') }}
+      >
+        <boxGeometry args={mortiseSize} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
 
       {/* Primary member axis (red line along beam length) */}
       <line>
@@ -243,8 +244,8 @@ export function MortiseTenonScene({ geometry, loads }: Props) {
         <Tenon
           position={[0, 0, 0]}
           size={[tw, tl, th]}
-          selected={selectedMember === 'tenon'}
-          dimmed={selectedMember !== null && selectedMember !== 'tenon'}
+          selected={selectedMember === 'tenon' || selectedMember === 'secondary'}
+          dimmed={selectedMember !== null && selectedMember !== 'tenon' && selectedMember !== 'secondary' && selectedMember !== 'mortise'}
           onClick={() => setSelectedMember('tenon')}
         />
       </group>

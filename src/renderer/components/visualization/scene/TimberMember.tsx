@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { Mesh } from 'three'
+import { Edges } from '@react-three/drei'
 import { useStore } from '../../../store'
 
 interface Props {
@@ -39,7 +40,7 @@ export function TimberMember({
   }
 
   const getOpacity = () => {
-    if (viewMode === 'transparent') return transparency / 100
+    if (viewMode === 'transparent') return selected ? 1.0 : transparency / 100
     if (dimmed) return 0.3
     return 1.0
   }
@@ -62,6 +63,7 @@ export function TimberMember({
     >
       <boxGeometry args={size} />
       <meshStandardMaterial
+        key={`${isTransparent}-${isWireframe}`}
         color={getColor()}
         roughness={0.8}
         metalness={0.0}
@@ -69,6 +71,7 @@ export function TimberMember({
         opacity={getOpacity()}
         wireframe={isWireframe}
       />
+      {viewMode === 'transparent' && <Edges color={getColor()} />}
     </mesh>
   )
 }

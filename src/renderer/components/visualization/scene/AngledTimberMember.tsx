@@ -2,6 +2,7 @@ import { useRef, useState, useMemo } from 'react'
 import type { Mesh, BufferGeometry } from 'three'
 import * as THREE from 'three'
 import { SUBTRACTION, Brush, Evaluator } from 'three-bvh-csg'
+import { Edges } from '@react-three/drei'
 import { useStore } from '../../../store'
 
 interface Props {
@@ -95,7 +96,7 @@ export function AngledTimberMember({
   }
 
   const getOpacity = () => {
-    if (viewMode === 'transparent') return transparency / 100
+    if (viewMode === 'transparent') return selected ? 1.0 : transparency / 100
     if (dimmed) return 0.3
     return 1.0
   }
@@ -118,6 +119,7 @@ export function AngledTimberMember({
       }}
     >
       <meshStandardMaterial
+        key={`${isTransparent}-${isWireframe}`}
         color={getColor()}
         roughness={0.8}
         metalness={0.0}
@@ -125,6 +127,7 @@ export function AngledTimberMember({
         opacity={getOpacity()}
         wireframe={isWireframe}
       />
+      {viewMode === 'transparent' && <Edges geometry={geometry} color={getColor()} />}
     </mesh>
   )
 }
