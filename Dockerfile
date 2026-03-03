@@ -26,9 +26,9 @@ RUN npm run build:web
 
 
 # ── Stage 2: Production image ──────────────────────────────────────────────────
-# Lean Node image — no build tools, no source files, just the compiled output
-# and the C++ engine binary.
-FROM node:20-alpine
+# node:20-slim (Debian) instead of alpine — the C++ engine is compiled against
+# glibc (on the bookworm builder) and cannot run on musl/alpine.
+FROM node:20-slim
 
 WORKDIR /app
 
